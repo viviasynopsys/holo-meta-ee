@@ -1,0 +1,77 @@
+# --- Simulation outputs (bulk data — keep on D: per 05_Work_Plan_Milestones.md §9) ---
+sim/**/data/
+sim/**/results/
+*.h5
+*.hdf5
+*.mat
+*.npy
+*.npz
+
+# --- Ansys / optics tool artefacts ---
+# Lumerical
+*.fsp
+*.ldev
+*.lms
+*.icp
+*.fsp_*/
+*_p0.log
+*.log
+
+# Zemax OpticStudio
+*.ZMX
+*.zmx
+*.ZDA
+*.ZBF
+*.ZRD
+*.ZBB
+*.CFG
+*.SES
+Autosave/
+Undo/
+
+# SPEOS
+*.scdocx
+*.speos/
+*.xmp
+*.lpf
+*.OPTDistribution
+*.anisotropicbsdf
+*.brdf
+*.bsdf
+
+# LSWM / meta-atom libraries (regenerable, large)
+*.lswm
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# --- Figures: keep sources, ignore heavy intermediates ---
+figures/**/*.tif
+figures/**/*.tiff
+figures/**/raw/
+
+# --- OS / editor ---
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+.vscode/
+.idea/
+
+# --- Secrets: never commit ---
+.env
+.env.*
+*.key
+*.pem
+credentials.json
+secrets.*
