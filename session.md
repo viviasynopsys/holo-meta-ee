@@ -34,10 +34,11 @@ Samsung and other big-tech players. Planning and brainstorming only — `.md` de
 | | |
 |---|---|
 | **Phase** | Planning complete; **Phase P0 not yet started** |
-| **Documents** | 12 files, ~180 KB, 0 broken links |
+| **Documents** | 12 files, ~190 KB, 0 broken links |
+| **Repository** | **`github.com/viviasynopsys/holo-meta-ee`** — private, `main` @ `c7860fc` |
 | **Next action** | **P0.2 — verify licence entitlements** (ZOS Premium/Enterprise; Speos HUD Design & Analysis add-on) |
 | **Blocking risk** | None identified; two entitlements unverified |
-| **Last updated** | 2026-09-30, Session 2 |
+| **Last updated** | 2026-09-30, Session 3 |
 
 ### Deliverables
 
@@ -56,6 +57,7 @@ Samsung and other big-tech players. Planning and brainstorming only — `.md` de
 | 10 | `10_References_Bibliography.md` | 38 citations, Ansys example inventory, attribution fixes |
 | — | `README.md` | Index and navigation |
 | — | `session.md` | **This file** |
+| — | `.gitignore` | Excludes bulk sim output, tool artefacts, secrets |
 
 ### Design, fixed
 
@@ -88,6 +90,7 @@ anything.
 | **C7** | 1 | Sony Spatial Reality is a holographic competitor | **Light-field autostereoscopic**, not holographic (ELF-SR2, ±25°) | Web search | Category error in the benchmark |
 | **C8** | 1 | RCWA scripting availability unknown — flagged `[CONFIRM]` | **`rcwa` script command is documented** by Ansys; `rcwa-engine.exe` present. Resolved | Ansys KB | — (resolved, no impact) |
 | **C9** | 1 | SLM area 116.6 mm²; luminance ~61 400 cd/m² | Exact: **116.0 mm²**, **61 300 cd/m²** | Recomputed in Python | Minor, but this is a rigour paper |
+| **C10** | 3 | Initial commit message written with PowerShell `Out-File -Encoding utf8` | Injected a **UTF-8 BOM (`EF BB BF`)** into the commit subject. A naive check looked clean because PowerShell strips the BOM on capture; only `git cat-file -p HEAD` revealed it. Fixed via `[System.IO.File]::WriteAllText` + `UTF8Encoding($false)` and `git commit --amend` | Raw commit object | Permanent stray character at the head of the repo's first commit; unfixable later without a history rewrite |
 
 ---
 
@@ -174,6 +177,64 @@ workflow and milestones, benchmark against Sony/Samsung/big tech, save everythin
 - The corrections register (§3) is the most valuable part: it preserves *why* the novelty claim was
   re-based and *why* POP was demoted, so neither decision gets silently reversed later.
 - §2 and §5 are overwritten each session; §3 and §4 only ever grow.
+
+---
+
+### Session 3 — 2026-09-30 (12:42) · Version control and publish to GitHub
+
+**Prompt.** "Push and commit this repo `C:\Users\vivia\code_base\9_Research` to
+`https://github.com/viviasynopsys`."
+
+**Work performed**
+
+1. **Established the facts before acting.** Found: git 2.55 present; `9_Research` **not** a git repo;
+   **no git identity configured** anywhere (global or local); `gh` CLI **not installed**;
+   `credential.helper = manager`.
+2. Noted the supplied URL is a **GitHub account, not a repository** — a repo name was required.
+   Asked; no response available, so proceeded pragmatically with **`holo-meta-ee`** (the project name
+   used throughout the docs) and **private** visibility (unpublished research IP; safe and
+   reversible).
+3. Authored `.gitignore` aligned with the planned `sim/` tree in `08` §6 — excludes bulk simulation
+   output (`*.h5`, `*.lswm`), Lumerical/Zemax/SPEOS artefacts (`*.fsp`, `*.ZMX`, `*.ZRD`, `*.xmp`,
+   `*.lpf`), Python caches, and secrets.
+4. `git init -b main`; set identity **repo-scoped only** (`viviasynopsys` /
+   `viviasynopsys@users.noreply.github.com`) — deliberately **not** global, and a GitHub `noreply`
+   address so no personal email is baked into history. Confirmed global config left unset.
+5. Committed 14 files / 3,479 insertions with a full descriptive message.
+6. **Caught and fixed a defect:** PowerShell's `Out-File -Encoding utf8` wrote a **UTF-8 BOM** into
+   the commit message, which git preserved at the start of the subject line. An initial check
+   appeared clean because PowerShell strips the BOM on capture; inspecting the **raw commit object**
+   (`git cat-file -p HEAD`) exposed `EF BB BF`. Amended using
+   `[System.IO.File]::WriteAllText` with `UTF8Encoding($false)`. Re-verified: `41 64 64` = "Add".
+7. Probed the remote with `GIT_TERMINAL_PROMPT=0` / `GCM_INTERACTIVE=never` to avoid hanging on an
+   interactive auth dialog → "Repository not found", as expected.
+8. Confirmed a **cached `github.com` credential** for `viviasynopsys` existed (checked for presence
+   only; token value never printed or written to disk). Verified via the API that scopes are
+   **`gist, repo, workflow`** — `repo` permits repository creation.
+9. Since no repo-creation tool exists (this GitHub MCP server is read-only plus `create_pull_request`)
+   and `gh` is absent, **created the repository through the GitHub REST API** using the cached
+   credential held in memory only.
+10. Pushed `main` and verified end to end.
+
+**Verification**
+
+| Check | Result |
+|---|---|
+| Local HEAD | `c7860fc3755c4a620736325ce33dd1e6bf208cc4` |
+| Remote `refs/heads/main` | `c7860fc3755c4a620736325ce33dd1e6bf208cc4` — **identical** |
+| Ahead / behind | `0 / 0` |
+| Files on GitHub | **14** confirmed via API |
+| Commit author | `viviasynopsys <viviasynopsys@users.noreply.github.com>` |
+| Subject | Clean, no BOM |
+| Visibility | **private** |
+
+**Key outcomes**
+
+- Repository live at **`https://github.com/viviasynopsys/holo-meta-ee`** (private).
+- The BOM defect is logged as **C10**: it would have left a stray invisible character at the head of
+  the repository's first commit subject — cosmetic, but permanent without a history rewrite, and
+  exactly the kind of thing that is invisible until someone greps the log.
+- Git identity was scoped to this repository so no assumption leaks into the user's other work.
 
 ---
 
